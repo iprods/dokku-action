@@ -5,8 +5,6 @@ if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
   export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
 fi
 
-source helpers/app
-
 DOKKU_CMD='ssh -p "$ssh_port" "dokku@$ssh_host"'
 
 setup-ssh
