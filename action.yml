@@ -43,6 +43,9 @@ inputs:
   custom_dockerfile_location:
     description: "A custom relative path to the Dockerfile"
     required: false
+  letsencrypt_email:
+    description: "Email address to use for letsencrypt"
+    required: false
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -60,4 +63,5 @@ runs:
     SSH_HOST_KEY: ${{ inputs.ssh_host_key }}
     SSH_PRIVATE_KEY: ${{ inputs.ssh_private_key }}
     CUSTOM_DOCKERFILE_LOCATION: ${{ inputs.custom_dockerfile_location }}
+    LETSENCRYPT_EMAIL: ${{ inputs.letsencrypt_email }}
 
