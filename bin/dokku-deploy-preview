@@ -45,11 +45,15 @@ list_apps
 
 ensure_app ${REVIEW_APP_NAME}
 
-log-info "Pushing to Dokku Host"
+log-info "Pushing to Dokku host"
 
 if [ -n "$REVIEW_APP_NAME" ] && [ "$app_name" != "$REVIEW_APP_NAME" ]; then
   GIT_REMOTE_URL="${GIT_REMOTE_URL%"/$app_name"}/${REVIEW_APP_NAME}"
 fi
+
+whoami
+
+ls -al /github/workspace
 
 # shellcheck disable=SC2086
 git push $GIT_PUSH_FLAGS "$GIT_REMOTE_URL" "$commit_sha:refs/heads/$BRANCH"
