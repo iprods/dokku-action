@@ -5,8 +5,6 @@ if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
   export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
 fi
 
-DOKKU_CMD='ssh -p "$ssh_port" "dokku@$ssh_host"'
-
 setup-ssh
 
 log-info "Creating Dokku preview deployment"
@@ -14,7 +12,7 @@ log-info "Creating Dokku preview deployment"
 ssh_port=$(parse-ssh-port)
 ssh_host=$(parse-ssh-host)
 
-commit_sha="$(parse-ci-commit)"
+DOKKU_CMD='ssh -p "$ssh_port" "dokku@$ssh_host"'
 
 app-ensure ${REVIEW_APP_NAME}
 
