@@ -1,0 +1,25 @@
+#!/bin/sh -l
+
+set -e
+
+function ensure_app {
+  local app_name=${1}
+  does_app_exist ${app_name}
+  local exists=$?
+  if [ "${exists}" -eq 0 ]; then
+    ../log-info "Preview deployment ${app_name} already created"
+  else
+    ../log-info "Preview deployment ${app_name} will be created"
+    create_app ${app_name}
+  fi
+}
+
+function does_app_exist {
+  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1
+}
+
+function create_app {
+  ${DOKKU_CMD} apps:create ${1}
+}
+
+ensure_app $@

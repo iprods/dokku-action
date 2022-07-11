@@ -1,0 +1,7 @@
+#!/bin/sh -l
+# shellcheck shell=ash
+set -e
+
+message="$*"
+# shellcheck disable=SC2169
+echo -e "\e[31m${message}\e[0m" 1>&2

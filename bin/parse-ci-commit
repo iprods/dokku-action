@@ -1,0 +1,35 @@
+#!/bin/sh -l
+set -e
+
+value="$CI_COMMIT"
+if [ -n "$CI_COMMIT" ]; then
+  true
+elif [ -n "$PLUGIN_CI_COMMIT" ]; then
+  # drone plugin
+  value="$PLUGIN_CI_COMMIT"
+elif [ -n "$CIRCLE_SHA1" ]; then
+  # circleci
+  value="$CIRCLE_SHA1"
+elif [ -n "$CI_COMMIT_ID" ]; then
+  # cloudbees
+  value="$CI_COMMIT_ID"
+elif [ -n "$DRONE_COMMIT_SHA" ]; then
+  # drone
+  value="$DRONE_COMMIT_SHA"
+elif [ -n "$GITHUB_SHA" ]; then
+  # github actions
+  value="$GITHUB_SHA"
+elif [ -n "$CI_COMMIT_SHA" ]; then
+  # gitlab-ci
+  value="$CI_COMMIT_SHA"
+elif [ -n "$SEMAPHORE_GIT_SHA" ]; then
+  # semaphoreci
+  value="$SEMAPHORE_GIT_SHA"
+elif [ -n "$TRAVIS_COMMIT" ]; then
+  # travisci
+  value="$TRAVIS_COMMIT"
+else
+  value=$(git rev-parse HEAD 2>/dev/null || true)
+fi
+
+echo "$value"
