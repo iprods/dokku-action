@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-set -ex
 
 if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
   export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
