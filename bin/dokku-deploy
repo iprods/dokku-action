@@ -46,7 +46,7 @@ if [ "$COMMAND" = "review-apps:destroy" ]; then
   exit 0
 fi
 
-if [ -n "$COMMAND" ] && [ "$COMMAND" != "review-apps:create" ] && [ "$COMMAND" != "deploy" ]; then
+if [ -n "$COMMAND" ] && [ "$COMMAND" != "review-apps:deploy" ] && [ "$COMMAND" != "review-apps:create" ] && [ "$COMMAND" != "deploy" ]; then
   log-error "Invalid command specified"
   exit 1
 fi
