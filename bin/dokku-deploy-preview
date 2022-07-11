@@ -51,6 +51,11 @@ if [ -n "$REVIEW_APP_NAME" ] && [ "$app_name" != "$REVIEW_APP_NAME" ]; then
   GIT_REMOTE_URL="${GIT_REMOTE_URL%"/$app_name"}/${REVIEW_APP_NAME}"
 fi
 
+if [ -n "$CUSTOM_DOCKERFILE_LOCATION" ]; then
+  ${DOKKU_CMD} builder-dockerfile:set $REVIEW_APP_NAME dockerfile-path $CUSTOM_DOCKERFILE_LOCATION
+fi
+
+# This is to circumvent "fatal: unsafe repository ('/github/workspace' is owned by someone else)"
 chown root: /github/workspace
 
 # shellcheck disable=SC2086

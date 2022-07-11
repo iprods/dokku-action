@@ -40,6 +40,9 @@ inputs:
   ssh_private_key:
     description: "A private SSH key that has push acces to your Dokku instance"
     required: true
+  custom_dockerfile_location:
+    description: "A custom relative path to the Dockerfile"
+    required: false
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -56,3 +59,5 @@ runs:
     REVIEW_APP_NAME: ${{ inputs.review_app_name }}
     SSH_HOST_KEY: ${{ inputs.ssh_host_key }}
     SSH_PRIVATE_KEY: ${{ inputs.ssh_private_key }}
+    CUSTOM_DOCKERFILE_LOCATION: ${{ inputs.custom_dockerfile_location }}
+
