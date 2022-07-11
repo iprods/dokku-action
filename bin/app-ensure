@@ -1,14 +1,14 @@
 #!/usr/bin/env sh
-set -e
+set -ex
 
 function ensure_app {
   local app_name=${1}
   does_app_exist ${app_name}
   local exists=$?
   if [ "${exists}" -eq 0 ]; then
-    ../log-info "Preview deployment ${app_name} already created"
+    log-info "Preview deployment ${app_name} already created"
   else
-    ../log-info "Preview deployment ${app_name} will be created"
+    log-info "Preview deployment ${app_name} will be created"
     create_app ${app_name}
   fi
 }
