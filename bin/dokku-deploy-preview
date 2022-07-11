@@ -32,7 +32,7 @@ log-info "Creating Dokku preview deployment"
 ssh_port=$(parse-ssh-port)
 ssh_host=$(parse-ssh-host)
 
-DOKKU_CMD='ssh -p "$ssh_port" "dokku@$ssh_host"'
+DOKKU_CMD="ssh -p $ssh_port dokku@$ssh_host"
 
 ensure_app ${REVIEW_APP_NAME}
 
