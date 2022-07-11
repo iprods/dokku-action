@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/usr/bin/env sh
 set -e
 
 if [ -n "$PLUGIN_GIT_REMOTE_URL" ]; then

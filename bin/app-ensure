@@ -1,5 +1,4 @@
-#!/bin/sh -l
-
+#!/usr/bin/env sh
 set -e
 
 function ensure_app {

@@ -1,5 +1,5 @@
-#!/usr/sh -l
-set -e
+#!/usr/bin/env sh
+set -ex
 
 if [ -n "$PLUGIN_BRANCH" ]; then
   export BRANCH="$PLUGIN_BRANCH"
