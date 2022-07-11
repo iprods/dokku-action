@@ -21,11 +21,11 @@ function ensure_app {
 }
 
 function does_app_exist {
-  ${ssh_remote} apps:exists ${1} >/dev/null 2>&1
+  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1
 }
 
 function create_app {
-  ${ssh_remote} apps:create ${1}
+  ${DOKKU_CMD} apps:create ${1}
 }
 
 setup-ssh
@@ -34,6 +34,8 @@ log-info "Creating Dokku preview deployment"
 
 ssh_port=$(parse-ssh-port)
 ssh_host=$(parse-ssh-host)
+
+DOKKU_CMD="ssh -p $ssh_port dokku@$ssh_host"
 
 app_name="$(parse-app-name)"
 commit_sha="$(parse-ci-commit)"
