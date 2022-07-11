@@ -5,6 +5,26 @@ if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
   export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
 fi
 
+function ensure_app {
+  local app_name=${1}
+  does_app_exist ${app_name}
+  local exists=$?
+  if [ "${exists}" -eq 0 ]; then
+    log-info "Preview deployment ${app_name} already created"
+  else
+    log-info "Preview deployment ${app_name} will be created"
+    create_app ${app_name}
+  fi
+}
+
+function does_app_exist {
+  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1
+}
+
+function create_app {
+  ${DOKKU_CMD} apps:create ${1}
+}
+
 setup-ssh
 
 log-info "Creating Dokku preview deployment"
@@ -14,7 +34,7 @@ ssh_host=$(parse-ssh-host)
 
 DOKKU_CMD='ssh -p "$ssh_port" "dokku@$ssh_host"'
 
-app-ensure ${REVIEW_APP_NAME}
+ensure_app ${REVIEW_APP_NAME}
 
 # TODO Set app config
 # TODO Check for require plugin
