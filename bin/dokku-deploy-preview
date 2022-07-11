@@ -5,6 +5,10 @@ if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
   export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
 fi
 
+function list_apps {
+  ${DOKKU_CMD} apps:report
+}
+
 function ensure_app {
   local app_name=${1}
   does_app_exist ${app_name}
@@ -33,6 +37,8 @@ ssh_port=$(parse-ssh-port)
 ssh_host=$(parse-ssh-host)
 
 DOKKU_CMD="ssh -p $ssh_port dokku@$ssh_host"
+
+list_apps
 
 ensure_app ${REVIEW_APP_NAME}
 
