@@ -21,11 +21,11 @@ function ensure_app {
 }
 
 function does_app_exist {
-  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1
+  ${ssh_remote} apps:exists ${1} >/dev/null 2>&1
 }
 
 function create_app {
-  ${DOKKU_CMD} apps:create ${1}
+  ${ssh_remote} apps:create ${1}
 }
 
 setup-ssh
@@ -35,11 +35,22 @@ log-info "Creating Dokku preview deployment"
 ssh_port=$(parse-ssh-port)
 ssh_host=$(parse-ssh-host)
 
-DOKKU_CMD="ssh -p $ssh_port dokku@$ssh_host"
+app_name="$(parse-app-name)"
+commit_sha="$(parse-ci-commit)"
+ssh_remote="ssh://dokku@$(parse-ssh-host):$(parse-ssh-port)"
 
 list_apps
 
 ensure_app ${REVIEW_APP_NAME}
+
+log-info "Pushing to Dokku Host"
+
+if [ -n "$REVIEW_APP_NAME" ] && [ "$app_name" != "$REVIEW_APP_NAME" ]; then
+  GIT_REMOTE_URL="${GIT_REMOTE_URL%"/$app_name"}/${REVIEW_APP_NAME}"
+fi
+
+# shellcheck disable=SC2086
+git push $GIT_PUSH_FLAGS "$GIT_REMOTE_URL" "$commit_sha:refs/heads/$BRANCH"
 
 # TODO Set app config
 # TODO Check for require plugin
@@ -48,6 +59,4 @@ ensure_app ${REVIEW_APP_NAME}
 # TODO Deploy application
 # TODO Check for Letsencrypt plugin
 ## TODO Enable Letsencrypt
-
-ssh -p "$ssh_port" "dokku@$ssh_host" apps:unlock "$app"
 
