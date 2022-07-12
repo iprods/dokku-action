@@ -31,7 +31,7 @@ function create_app {
 }
 
 function is_letsencrypt_enabled {
-  ${DOKKU_CMD} letsencrypt:active ${1}
+  ${DOKKU_CMD} letsencrypt:active ${1} >/dev/null 2>&1 || echo
 }
 
 setup-ssh
@@ -78,8 +78,15 @@ if [ -n "$PORT_MAPPING" ]; then
   ${DOKKU_CMD} proxy:ports-set $REVIEW_APP_NAME $PORT_MAPPING
 fi
 
-if [ -n "$LETSENCRYPT_EMAIL" ] && is_letsencrypt_enabled ${REVIEW_APP_NAME}; then
-  ${DOKKU_CMD} config:set --no-restart $REVIEW_APP_NAME DOKKU_LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-  ${DOKKU_CMD} letsencrypt:enable $REVIEW_APP_NAME
+if [ -n "$LETSENCRYPT_EMAIL" ]; then
+  is_letsencrypt_enabled ${REVIEW_APP_NAME}
+  local exists=$?
+  if [ "${exists}" -eq 0 ]; then
+    log-info "Let's Encrypt for ${app_name} already created"
+  else
+    log-info "Let's Encrypt for ${app_name} will be created"
+    ${DOKKU_CMD} config:set --no-restart $REVIEW_APP_NAME DOKKU_LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    ${DOKKU_CMD} letsencrypt:enable $REVIEW_APP_NAME
+  fi
 fi
 
