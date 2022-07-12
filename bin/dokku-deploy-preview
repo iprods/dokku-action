@@ -28,6 +28,10 @@ function create_app {
   ${DOKKU_CMD} apps:create ${1}
 }
 
+function is_letsencrypt_enabled {
+  ${DOKKU_CMD} letsencrypt:active ${1}
+}
+
 setup-ssh
 
 log-info "Creating Dokku preview deployment"
@@ -72,7 +76,7 @@ if [ -n "$PORT_MAPPING" ]; then
   ${DOKKU_CMD} proxy:ports-set $REVIEW_APP_NAME $PORT_MAPPING
 fi
 
-if [ -n "$LETSENCRYPT_EMAIL" ]; then
+if [ -n "$LETSENCRYPT_EMAIL" ] && is_letsencrypt_enabled ${REVIEW_APP_NAME}; then
   ${DOKKU_CMD} config:set --no-restart $REVIEW_APP_NAME DOKKU_LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
   ${DOKKU_CMD} letsencrypt:enable $REVIEW_APP_NAME
 fi
