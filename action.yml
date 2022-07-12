@@ -46,6 +46,9 @@ inputs:
   letsencrypt_email:
     description: "Email address to use for letsencrypt"
     required: false
+  port_mapping:
+    description: "A Dokku style port mapping like http:80:5000"
+    required: false
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -64,4 +67,5 @@ runs:
     SSH_PRIVATE_KEY: ${{ inputs.ssh_private_key }}
     CUSTOM_DOCKERFILE_LOCATION: ${{ inputs.custom_dockerfile_location }}
     LETSENCRYPT_EMAIL: ${{ inputs.letsencrypt_email }}
+    PORT_MAPPING: ${{ inputs.port_mapping }}
 
