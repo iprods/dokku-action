@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -e
+
 if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
   export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
 fi
@@ -21,7 +23,7 @@ function ensure_app {
 }
 
 function does_app_exist {
-  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1
+  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1 || echo
 }
 
 function create_app {
