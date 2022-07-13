@@ -32,7 +32,7 @@ function create_app {
 function enable_letsencrypt {
   local app_name=${1}
   local exists=$(is_letsencrypt_enabled ${app_name})
-  if [ "${exists}" -eq 1 ]; then
+  if [ "${exists}" -eq 0 ]; then
     log-info "Let's Encrypt for ${app_name} will be created"
     ${DOKKU_CMD} config:set --no-restart $app_name DOKKU_LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     ${DOKKU_CMD} letsencrypt:enable $app_name
