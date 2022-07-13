@@ -12,8 +12,7 @@ function list_apps {
 
 function ensure_app {
   local app_name=${1}
-  does_app_exist ${app_name}
-  local exists=$?
+  local exists=does_app_exist ${app_name}
   if [ "${exists}" -eq 0 ]; then
     log-info "Preview deployment ${app_name} already created"
   else
@@ -23,7 +22,7 @@ function ensure_app {
 }
 
 function does_app_exist {
-  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1 || echo
+  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1 || echo 1
 }
 
 function create_app {
