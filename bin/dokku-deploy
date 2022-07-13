@@ -21,6 +21,9 @@ if [ -z "$BRANCH" ]; then
   BRANCH="master"
 fi
 
+# Fix for https://github.blog/2022-04-12-git-security-vulnerability-announced/
+git config --global --add safe.directory /github/workspace
+
 setup-ssh
 
 commit_sha="$(parse-ci-commit)"
