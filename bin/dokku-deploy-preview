@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
 
-set -ex
+set -e
 
 if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
   export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
 fi
 
 function list_apps {
-  ${DOKKU_CMD} apps:report
+  ${DOKKU_CMD} apps:report || echo
 }
 
 function ensure_app {
