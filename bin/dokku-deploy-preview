@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -ex
+set -e
 
 if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
   export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
@@ -22,7 +22,7 @@ function ensure_app {
 }
 
 function does_app_exist {
-  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1 || echo 0
+  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1 && echo 1 || echo 0
 }
 
 function create_app {
@@ -42,7 +42,7 @@ function enable_letsencrypt {
 }
 
 function is_letsencrypt_enabled {
-  ${DOKKU_CMD} letsencrypt:active ${1} >/dev/null 2>&1 || echo 0
+  ${DOKKU_CMD} letsencrypt:active ${1} >/dev/null 2>&1 && echo 1 || echo 0
 }
 
 setup-ssh
