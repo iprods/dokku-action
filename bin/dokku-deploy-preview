@@ -99,7 +99,7 @@ ssh_remote="ssh://dokku@$(parse-ssh-host):$(parse-ssh-port)"
 ensure_app ${REVIEW_APP_NAME}
 
 if [ -n "${APP_CONFIG}" ]; then
-  set_app_config ${REVIEW_APP_NAME} ${APP_CONFIG}
+  set_app_config ${REVIEW_APP_NAME} "${APP_CONFIG}"
 fi
 
 if [ -n "$DATABASES" ]; then
