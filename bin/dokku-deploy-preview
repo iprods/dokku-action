@@ -37,10 +37,34 @@ function is_letsencrypt_enabled {
   ${DOKKU_CMD} letsencrypt:active ${1} >/dev/null 2>&1 && echo 1 || echo 0
 }
 
+function does_database_exist {
+  ${DOKKU_CMD} postgres:exists ${1} >/dev/null 2>&1 && echo 1 || echo 0
+}
+
+function create_database {
+  local db_name=${1}
+  ${DOKKU_CMD} postgres:create ${db_name} >/dev/null 2>&1
+}
+
+function link_database {
+  local db_name=${1}
+  local db_alias=${2}
+  local app_to_link=${3}
+  ${DOKKU_CMD} postgres:link ${db_name} ${app_to_link} -a ${db_alias} >/dev/null 2>&1 
+}
+
 function ensure_database {
-  echo "appname: ${1}"
-  echo "dbname: ${2}"
-  echo "dbalias: ${2}"
+  local db_name="${1}-${2}"
+  local db_alias=${3}
+  local app_to_link=${1}
+  local exists=$(does_database_exist ${db_name})
+  if [ "${exists}" -eq "0" ]; then
+    log-info "Database ${db_name} already created"
+  else
+    log-info "Database ${db_name} will be created"
+    create_database ${db_name}
+    link_database ${db_name} ${db_alias} ${app_name}
+  fi
 }
 
 function setup_databases {
@@ -50,7 +74,7 @@ function setup_databases {
   for database in ${databases}; do
     db_postfix="${database%:*}"
     db_alias="${database##*:}"
-    echo "post: ${db_postfix} alias: ${db_alias}"
+    ensure_database ${app_name} ${db_postfix} ${db_alias}
   done
   exit 1
 }
