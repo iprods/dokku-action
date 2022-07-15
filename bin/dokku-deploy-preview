@@ -71,7 +71,7 @@ ssh_remote="ssh://dokku@$(parse-ssh-host):$(parse-ssh-port)"
 ensure_app ${REVIEW_APP_NAME}
 
 if [ -n "$DATABASES" ]; then
-  setup_databases ${REVIEW_APP_NAME} ${DATABASES}
+  setup_databases ${REVIEW_APP_NAME} "${DATABASES}"
 fi
 
 log-info "Pushing to Dokku host"
