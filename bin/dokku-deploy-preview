@@ -75,7 +75,6 @@ function setup_databases {
     db_alias="${database##*:}"
     ensure_database ${app_name} ${db_postfix} ${db_alias}
   done
-  exit 1
 }
 
 setup-ssh
