@@ -58,7 +58,7 @@ function ensure_database {
   local db_alias=${3}
   local app_to_link=${1}
   local exists=$(does_database_exist ${db_name})
-  if [ "${exists}" -eq "0" ]; then
+  if [ "${exists}" -eq "1" ]; then
     log-info "Database ${db_name} already created"
   else
     log-info "Database ${db_name} will be created"
