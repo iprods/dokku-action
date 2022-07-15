@@ -58,7 +58,7 @@ function link_service {
     ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} -a ${alias} || echo
   else
     ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} || echo
-  end
+  fi
 }
 
 function ensure_service {
