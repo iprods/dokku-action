@@ -37,43 +37,54 @@ function is_letsencrypt_enabled {
   ${DOKKU_CMD} letsencrypt:active ${1} >/dev/null 2>&1 && echo 1 || echo 0
 }
 
-function does_database_exist {
-  ${DOKKU_CMD} postgres:exists ${1} >/dev/null 2>&1 && echo 1 || echo 0
+function does_service_exist {
+  local type=${1}
+  local name=${2}
+  ${DOKKU_CMD} ${type}:exists ${name} >/dev/null 2>&1 && echo 1 || echo 0
 }
 
-function create_database {
-  local db_name=${1}
-  ${DOKKU_CMD} postgres:create ${db_name} || echo
+function create_service {
+  local type=${1}
+  local name=${2}
+  ${DOKKU_CMD} ${type}:create ${name} || echo
 }
 
-function link_database {
-  local db_name=${1}
-  local db_alias=${2}
+function link_service {
+  local type=${1}
+  local name=${2}
+  local alias=${3}
   local app_to_link=${3}
-  ${DOKKU_CMD} postgres:link ${db_name} ${app_to_link} -a ${db_alias} || echo
+  if [ -n ${alias} ]; then
+    ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} -a ${alias} || echo
+  else
+    ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} || echo
+  end
 }
 
-function ensure_database {
-  local db_name="${1}-${2}"
-  local db_alias=${3}
-  local app_to_link=${1}
-  local exists=$(does_database_exist ${db_name})
+function ensure_service {
+  local type=${1}
+  local app_name=${2}
+  local name="${app_name}-${3}"
+  local alias=${4}
+  local exists=$(does_service_exist ${type} ${name})
   if [ "${exists}" -eq "1" ]; then
-    log-info "Database ${db_name} already created"
+    log-info "Service ${type} as ${name} already created"
   else
-    log-info "Database ${db_name} will be created"
-    create_database ${db_name}
-    link_database ${db_name} ${db_alias} ${app_name}
+    log-info "Service ${type} as ${name} will be created"
+    create_service ${type} ${name}
+    link_service ${type} ${name} ${alias} ${app_name}
   fi
 }
 
-function setup_databases {
+function setup_services {
   local app_name=${1}
-  local databases=${2}
-  for database in ${databases}; do
-    db_postfix="${database%:*}"
-    db_alias="${database##*:}"
-    ensure_database ${app_name} ${db_postfix} ${db_alias}
+  local services=${2}
+  for service in ${services}; do
+    local type_postfix="${service%:*}"
+    local type="${type_postfix%:*}"
+    local postfix="${type_postfix##*:}"
+    local alias="${service##*:}"
+    ensure_service ${type} ${app_name} ${postfix} ${alias}
   done
 }
 
@@ -103,8 +114,8 @@ if [ -n "${APP_CONFIG}" ]; then
   set_app_config ${REVIEW_APP_NAME} "${APP_CONFIG}"
 fi
 
-if [ -n "$DATABASES" ]; then
-  setup_databases ${REVIEW_APP_NAME} "${DATABASES}"
+if [ -n "$SERVICES" ]; then
+  setup_services ${REVIEW_APP_NAME} "${SERVICES}"
 fi
 
 log-info "Pushing to Dokku host"
