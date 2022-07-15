@@ -50,7 +50,7 @@ inputs:
     description: "A Dokku style port mapping like http:80:5000"
     required: false
   databases:
-    description: "Databases that should be available and linked, e.g. - databaseName:dokkuAlias"
+    description: "Databases that should be available and linked, e.g. databaseName1:ALIAS1 databaseName2:ALIAS2"
     required: false
 runs:
   using: "docker"

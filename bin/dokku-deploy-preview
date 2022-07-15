@@ -45,8 +45,8 @@ function ensure_database {
 
 function setup_databases {
   local app_name=${1}
-  local databases=${2}
-  for database in "${DATABASES[@]}"; do
+  local databases=(${2})
+  for database in "${databases[@]}"; do
     local db_prefix="${database%%:*}"
     local db_name="${app_name}-${db_prefix}"
     local db_alias="${database##*:}"
