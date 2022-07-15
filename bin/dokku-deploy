@@ -43,6 +43,12 @@ if [ "$COMMAND" = "review-apps:create" ] || [ "$COMMAND" = "review-apps:deploy" 
   fi
 fi
 
+if [ "$COMMAND" = "review-apps:cleanup" ]; then
+  log-info "Cleaning up review app ${REVIEW_APP_NAME} and all linked services"
+  dokku-review-cleanup
+  exit 0
+fi
+
 if [ "$COMMAND" = "review-apps:destroy" ]; then
   log-info "Destroying review app '${REVIEW_APP_NAME}'"
   ssh "$ssh_remote" -- --force apps:destroy "$REVIEW_APP_NAME"
@@ -61,7 +67,8 @@ fi
 
 if [ "$COMMAND" = "review-apps:deploy" ]; then
   log-info "Deploying review app '${REVIEW_APP_NAME}' for '${app_name}'"
-  dokku-deploy-preview
+  dokku-review-deploy
+  exit 0
 fi
 
 if [ "$COMMAND" = "review-apps:create" ]; then
