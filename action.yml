@@ -49,6 +49,9 @@ inputs:
   port_mapping:
     description: "A Dokku style port mapping like http:80:5000"
     required: false
+  databases:
+    description: "Databases that should be available and linked, e.g. - databaseName:dokkuAlias"
+    required: false
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -68,4 +71,5 @@ runs:
     CUSTOM_DOCKERFILE_LOCATION: ${{ inputs.custom_dockerfile_location }}
     LETSENCRYPT_EMAIL: ${{ inputs.letsencrypt_email }}
     PORT_MAPPING: ${{ inputs.port_mapping }}
+    DATABASES: ${{ inputs.databases }}
 

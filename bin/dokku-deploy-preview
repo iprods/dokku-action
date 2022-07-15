@@ -2,14 +2,6 @@
 
 set -e
 
-if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
-  export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
-fi
-
-function list_apps {
-  ${DOKKU_CMD} apps:report || echo
-}
-
 function ensure_app {
   local app_name=${1}
   local exists=$(does_app_exist ${app_name})
@@ -45,6 +37,23 @@ function is_letsencrypt_enabled {
   ${DOKKU_CMD} letsencrypt:active ${1} >/dev/null 2>&1 && echo 1 || echo 0
 }
 
+function ensure_database {
+  echo "appname: ${1}"
+  echo "dbname: ${2}"
+  echo "dbalias: ${2}"
+}
+
+function setup_databases {
+  local app_name=${1}
+  local databases=${2}
+  for database in "${DATABASES[@]}"; do
+    local db_prefix="${database%%:*}"
+    local db_name="${app_name}-${db_prefix}"
+    local db_alias="${database##*:}"
+    ensure_database ${app_name} ${db_name} ${db_alias}
+  done
+}
+
 setup-ssh
 
 log-info "Creating Dokku preview deployment"
@@ -58,9 +67,11 @@ app_name="$(parse-app-name)"
 commit_sha="$(parse-ci-commit)"
 ssh_remote="ssh://dokku@$(parse-ssh-host):$(parse-ssh-port)"
 
-list_apps
-
 ensure_app ${REVIEW_APP_NAME}
+
+if [ -n "$DATABASES" ]; then
+  setup_databases ${REVIEW_APP_NAME} ${DATABASES}
+fi
 
 log-info "Pushing to Dokku host"
 
@@ -81,7 +92,6 @@ git push $GIT_PUSH_FLAGS "$GIT_REMOTE_URL" "$commit_sha:refs/heads/$BRANCH" >/de
 # TODO Check for require plugin
 ## TODO Create services
 ## TODO Link services
-# TODO Deploy application
 # TODO Check for Letsencrypt plugin
 
 if [ -n "$PORT_MAPPING" ]; then
