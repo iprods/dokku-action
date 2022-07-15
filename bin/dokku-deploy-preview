@@ -49,7 +49,7 @@ function setup_databases {
   for database in ${databases}; do
     local db_postfix="${database%:*}"
     local db_alias="${database##*:}"
-    echo "post: ${db_postfix} alias: #{db_alias}"
+    echo "post: ${db_postfix} alias: ${db_alias}"
   done
   exit 1
 }
