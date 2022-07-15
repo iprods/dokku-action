@@ -49,6 +49,12 @@ inputs:
   port_mapping:
     description: "A Dokku style port mapping like http:80:5000"
     required: false
+  services:
+    description: "Services that should be available and linked, e.g. postgres:db:DATABASE_URL"
+    required: false
+  app_config:
+    description: "Configuration values (non-sensible) for the app, e.g. APP_ENV=prod"
+    required: false
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -68,4 +74,6 @@ runs:
     CUSTOM_DOCKERFILE_LOCATION: ${{ inputs.custom_dockerfile_location }}
     LETSENCRYPT_EMAIL: ${{ inputs.letsencrypt_email }}
     PORT_MAPPING: ${{ inputs.port_mapping }}
+    SERVICES: ${{ inputs.services }}
+    APP_CONFIG: ${{ inputs.app_config }}
 

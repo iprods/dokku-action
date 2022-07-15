@@ -2,6 +2,10 @@
 
 This action allows to remote control a Dokku instance.
 
+## Configuration options
+
+
+
 ## Credits
 
 This action is inspired by the [official GH Action](https://github.com/dokku/github-action)

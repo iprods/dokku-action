@@ -2,14 +2,6 @@
 
 set -e
 
-if [ -n "$PLUGIN_REVIEW_APP_NAME" ]; then
-  export REVIEW_APP_NAME="$PLUGIN_REVIEW_APP_NAME"
-fi
-
-function list_apps {
-  ${DOKKU_CMD} apps:report || echo
-}
-
 function ensure_app {
   local app_name=${1}
   local exists=$(does_app_exist ${app_name})
@@ -45,6 +37,64 @@ function is_letsencrypt_enabled {
   ${DOKKU_CMD} letsencrypt:active ${1} >/dev/null 2>&1 && echo 1 || echo 0
 }
 
+function does_service_exist {
+  local type=${1}
+  local name=${2}
+  ${DOKKU_CMD} ${type}:exists ${name} >/dev/null 2>&1 && echo 1 || echo 0
+}
+
+function create_service {
+  local type=${1}
+  local name=${2}
+  ${DOKKU_CMD} ${type}:create ${name} || echo
+}
+
+function link_service {
+  local type=${1}
+  local name=${2}
+  local alias=${3}
+  local app_to_link=${3}
+  if [ -n ${alias} ]; then
+    ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} -a ${alias} || echo
+  else
+    ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} || echo
+  fi
+}
+
+function ensure_service {
+  local type=${1}
+  local app_name=${2}
+  local name="${app_name}-${3}"
+  local alias=${4}
+  local exists=$(does_service_exist ${type} ${name})
+  if [ "${exists}" -eq "1" ]; then
+    log-info "Service ${type} as ${name} already created"
+  else
+    log-info "Service ${type} as ${name} will be created"
+    create_service ${type} ${name}
+    link_service ${type} ${name} ${alias} ${app_name}
+  fi
+}
+
+function setup_services {
+  local app_name=${1}
+  local services=${2}
+  for service in ${services}; do
+    local type_postfix="${service%:*}"
+    local type="${type_postfix%:*}"
+    local postfix="${type_postfix##*:}"
+    local alias="${service##*:}"
+    ensure_service ${type} ${app_name} ${postfix} ${alias}
+  done
+}
+
+function set_app_config {
+  local app_name=${1}
+  local configs=${2}
+  log-info "Setting config for ${app_name}"
+  ${DOKKU_CMD} config:set --no-restart ${app_name} ${configs} || echo
+}
+
 setup-ssh
 
 log-info "Creating Dokku preview deployment"
@@ -58,9 +108,15 @@ app_name="$(parse-app-name)"
 commit_sha="$(parse-ci-commit)"
 ssh_remote="ssh://dokku@$(parse-ssh-host):$(parse-ssh-port)"
 
-list_apps
-
 ensure_app ${REVIEW_APP_NAME}
+
+if [ -n "${APP_CONFIG}" ]; then
+  set_app_config ${REVIEW_APP_NAME} "${APP_CONFIG}"
+fi
+
+if [ -n "$SERVICES" ]; then
+  setup_services ${REVIEW_APP_NAME} "${SERVICES}"
+fi
 
 log-info "Pushing to Dokku host"
 
@@ -76,12 +132,11 @@ fi
 chown root: /github/workspace
 
 # shellcheck disable=SC2086
-git push $GIT_PUSH_FLAGS "$GIT_REMOTE_URL" "$commit_sha:refs/heads/$BRANCH" >/dev/null 2>&1 || echo "Already up-to-date"
+git push $GIT_PUSH_FLAGS "$GIT_REMOTE_URL" "$commit_sha:refs/heads/$BRANCH" || echo "Already up-to-date"
 # TODO Set app config
 # TODO Check for require plugin
 ## TODO Create services
 ## TODO Link services
-# TODO Deploy application
 # TODO Check for Letsencrypt plugin
 
 if [ -n "$PORT_MAPPING" ]; then
