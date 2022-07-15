@@ -43,14 +43,14 @@ function does_database_exist {
 
 function create_database {
   local db_name=${1}
-  ${DOKKU_CMD} postgres:create ${db_name} >/dev/null 2>&1 || echo
+  ${DOKKU_CMD} postgres:create ${db_name} || echo
 }
 
 function link_database {
   local db_name=${1}
   local db_alias=${2}
   local app_to_link=${3}
-  ${DOKKU_CMD} postgres:link ${db_name} ${app_to_link} -a ${db_alias} >/dev/null 2>&1 || echo
+  ${DOKKU_CMD} postgres:link ${db_name} ${app_to_link} -a ${db_alias} || echo
 }
 
 function ensure_database {
