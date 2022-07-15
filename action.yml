@@ -52,6 +52,9 @@ inputs:
   databases:
     description: "Databases that should be available and linked, e.g. databaseName1:ALIAS1 databaseName2:ALIAS2"
     required: false
+  app_config:
+    description: "Configuration values (non-sensible) for the app, e.g. APP_ENV=prod"
+    required: false
 runs:
   using: "docker"
   image: "Dockerfile"
