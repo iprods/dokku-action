@@ -77,6 +77,12 @@ function setup_databases {
   done
 }
 
+function set_app_config {
+  local app_name=${1}
+  local configs=${2}
+  ${DOKKU_CMD} config:set --no-restart ${app_name} ${configs} || echo
+}
+
 setup-ssh
 
 log-info "Creating Dokku preview deployment"
@@ -91,6 +97,10 @@ commit_sha="$(parse-ci-commit)"
 ssh_remote="ssh://dokku@$(parse-ssh-host):$(parse-ssh-port)"
 
 ensure_app ${REVIEW_APP_NAME}
+
+if [ -n "${APP_CONFIG}" ]; then
+  set_app_config ${REVIEW_APP_NAME} ${APP_CONFIG}
+fi
 
 if [ -n "$DATABASES" ]; then
   setup_databases ${REVIEW_APP_NAME} "${DATABASES}"
