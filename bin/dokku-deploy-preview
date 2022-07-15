@@ -80,6 +80,7 @@ function setup_databases {
 function set_app_config {
   local app_name=${1}
   local configs=${2}
+  log-info "Setting config for ${app_name}"
   ${DOKKU_CMD} config:set --no-restart ${app_name} ${configs} || echo
 }
 

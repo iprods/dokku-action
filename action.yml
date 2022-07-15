@@ -75,4 +75,5 @@ runs:
     LETSENCRYPT_EMAIL: ${{ inputs.letsencrypt_email }}
     PORT_MAPPING: ${{ inputs.port_mapping }}
     DATABASES: ${{ inputs.databases }}
+    APP_CONFIG: ${{ inputs.app_config }}
 
