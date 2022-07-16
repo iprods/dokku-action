@@ -30,7 +30,7 @@ commit_sha="$(parse-ci-commit)"
 app_name="$(parse-app-name)"
 ssh_remote="ssh://dokku@$(parse-ssh-host):$(parse-ssh-port)"
 
-if [ "$COMMAND" = "review-apps:create" ] || [ "$COMMAND" = "review-apps:deploy" ] || [ "$COMMAND" = 'review-apps:destroy' ]; then
+if [ "$COMMAND" = "review-apps:create" ] || [ "$COMMAND" = "review-apps:deploy" ] || [ "$COMMAND" = 'review-apps:destroy' ] || [ "$COMMAND" = 'review-apps:cleanup' ]; then
   if [ -z "$REVIEW_APP_NAME" ]; then
     CI_BRANCH_NAME="$(parse-ci-branch-name)"
     if [ -z "$CI_BRANCH_NAME" ]; then
@@ -43,6 +43,12 @@ if [ "$COMMAND" = "review-apps:create" ] || [ "$COMMAND" = "review-apps:deploy" 
   fi
 fi
 
+if [ "$COMMAND" = "review-apps:cleanup" ]; then
+  log-info "Cleaning up review app ${REVIEW_APP_NAME} and all linked services"
+  dokku-review-cleanup
+  exit 0
+fi
+
 if [ "$COMMAND" = "review-apps:destroy" ]; then
   log-info "Destroying review app '${REVIEW_APP_NAME}'"
   ssh "$ssh_remote" -- --force apps:destroy "$REVIEW_APP_NAME"
@@ -50,7 +56,7 @@ if [ "$COMMAND" = "review-apps:destroy" ]; then
 fi
 
 if [ -n "$COMMAND" ] && [ "$COMMAND" != "review-apps:deploy" ] && [ "$COMMAND" != "review-apps:create" ] && [ "$COMMAND" != "deploy" ]; then
-  log-error "Invalid command specified"
+  log-error "Invalid command '${COMMAND}' specified"
   exit 1
 fi
 
@@ -61,7 +67,8 @@ fi
 
 if [ "$COMMAND" = "review-apps:deploy" ]; then
   log-info "Deploying review app '${REVIEW_APP_NAME}' for '${app_name}'"
-  dokku-deploy-preview
+  dokku-review-deploy
+  exit 0
 fi
 
 if [ "$COMMAND" = "review-apps:create" ]; then

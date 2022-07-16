@@ -1,0 +1,67 @@
+#!/usr/bin/env sh
+
+set -e
+
+function does_app_exist {
+  ${DOKKU_CMD} apps:exists ${1} >/dev/null 2>&1 && echo 1 || echo 0
+}
+
+function teardown_app {
+  local app_name=${1}
+  log-info "Tearing down ${app_name}"
+  local exists=$(does_app_exist ${app_name})
+  if [ "${exists}" -eq 0 ]; then
+    log-info "Preview deployment ${app_name} already removed"
+  else
+    log-info "Preview deployment ${app_name} will be removed"
+    ${DOKKU_CMD} apps:destroy ${app_name} --force
+  fi
+}
+
+function does_service_exist {
+  local type=${1}
+  local name=${2}
+  ${DOKKU_CMD} ${type}:exists ${name} >/dev/null 2>&1 && echo 1 || echo 0
+}
+
+function teardown_service {
+  local type=${1}
+  local app_name=${2}
+  local name="${app_name}-${3}"
+  local exists=$(does_service_exist ${type} ${name})
+  if [ "${exists}" -eq "1" ]; then
+    log-info "Tearing down service ${type} as ${name}"
+    ${DOKKU_CMD} ${type}:destroy ${name} --force
+  else
+    log-info "Service ${type} as ${name} not present"
+  fi
+}
+
+function teardown_services {
+  local app_name=${1}
+  local services=${2}
+  for service in ${services}; do
+    local type_postfix="${service%:*}"
+    local type="${type_postfix%:*}"
+    local postfix="${type_postfix##*:}"
+    teardown_service ${type} ${app_name} ${postfix}
+  done
+}
+
+setup-ssh
+
+log-info "Cleaning up Dokku preview deployment"
+
+ssh_port=$(parse-ssh-port)
+ssh_host=$(parse-ssh-host)
+
+DOKKU_CMD="ssh -p $ssh_port dokku@$ssh_host"
+
+app_name="$(parse-app-name)"
+
+teardown_app ${REVIEW_APP_NAME}
+
+if [ -n "$SERVICES" ]; then
+  teardown_services ${REVIEW_APP_NAME} "${SERVICES}"
+fi
+

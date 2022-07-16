@@ -53,11 +53,11 @@ function link_service {
   local type=${1}
   local name=${2}
   local alias=${3}
-  local app_to_link=${3}
+  local app_name=${4}
   if [ -n ${alias} ]; then
-    ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} -a ${alias} || echo
+    ${DOKKU_CMD} ${type}:link ${name} ${app_name} -a ${alias} || echo
   else
-    ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} || echo
+    ${DOKKU_CMD} ${type}:link ${name} ${app_name} || echo
   fi
 }
 
@@ -106,7 +106,6 @@ DOKKU_CMD="ssh -p $ssh_port dokku@$ssh_host"
 
 app_name="$(parse-app-name)"
 commit_sha="$(parse-ci-commit)"
-ssh_remote="ssh://dokku@$(parse-ssh-host):$(parse-ssh-port)"
 
 ensure_app ${REVIEW_APP_NAME}
 
@@ -133,11 +132,6 @@ chown root: /github/workspace
 
 # shellcheck disable=SC2086
 git push $GIT_PUSH_FLAGS "$GIT_REMOTE_URL" "$commit_sha:refs/heads/$BRANCH" || echo "Already up-to-date"
-# TODO Set app config
-# TODO Check for require plugin
-## TODO Create services
-## TODO Link services
-# TODO Check for Letsencrypt plugin
 
 if [ -n "$PORT_MAPPING" ]; then
   ${DOKKU_CMD} proxy:ports-set $REVIEW_APP_NAME $PORT_MAPPING
