@@ -8,6 +8,12 @@ function teardown_app {
   ${DOKKU_CMD} apps:destroy --force ${app_name}
 }
 
+function does_service_exist {
+  local type=${1}
+  local name=${2}
+  ${DOKKU_CMD} ${type}:exists ${name} >/dev/null 2>&1 && echo 1 || echo 0
+}
+
 function teardown_service {
   local type=${1}
   local app_name=${2}
