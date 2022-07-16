@@ -30,7 +30,7 @@ commit_sha="$(parse-ci-commit)"
 app_name="$(parse-app-name)"
 ssh_remote="ssh://dokku@$(parse-ssh-host):$(parse-ssh-port)"
 
-if [ "$COMMAND" = "review-apps:create" ] || [ "$COMMAND" = "review-apps:deploy" ] || [ "$COMMAND" = 'review-apps:destroy' ]; then
+if [ "$COMMAND" = "review-apps:create" ] || [ "$COMMAND" = "review-apps:deploy" ] || [ "$COMMAND" = 'review-apps:destroy' ] || [ "$COMMAND" = 'review-apps:cleanup' ]; then
   if [ -z "$REVIEW_APP_NAME" ]; then
     CI_BRANCH_NAME="$(parse-ci-branch-name)"
     if [ -z "$CI_BRANCH_NAME" ]; then
@@ -56,7 +56,7 @@ if [ "$COMMAND" = "review-apps:destroy" ]; then
 fi
 
 if [ -n "$COMMAND" ] && [ "$COMMAND" != "review-apps:deploy" ] && [ "$COMMAND" != "review-apps:create" ] && [ "$COMMAND" != "deploy" ]; then
-  log-error "Invalid command specified"
+  log-error "Invalid command '${COMMAND}' specified"
   exit 1
 fi
 
