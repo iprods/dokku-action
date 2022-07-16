@@ -53,11 +53,11 @@ function link_service {
   local type=${1}
   local name=${2}
   local alias=${3}
-  local app_to_link=${3}
+  local app_name=${4}
   if [ -n ${alias} ]; then
-    ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} -a ${alias} || echo
+    ${DOKKU_CMD} ${type}:link ${name} ${app_name} -a ${alias} || echo
   else
-    ${DOKKU_CMD} ${type}:link ${name} ${app_to_link} || echo
+    ${DOKKU_CMD} ${type}:link ${name} ${app_name} || echo
   fi
 }
 
