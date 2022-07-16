@@ -14,7 +14,7 @@ function teardown_app {
     log-info "Preview deployment ${app_name} already removed"
   else
     log-info "Preview deployment ${app_name} will be removed"
-    ${DOKKU_CMD} apps:destroy --force ${app_name}
+    ${DOKKU_CMD} apps:destroy ${app_name} --force
   fi
 }
 
@@ -31,7 +31,7 @@ function teardown_service {
   local exists=$(does_service_exist ${type} ${name})
   if [ "${exists}" -eq "1" ]; then
     log-info "Tearing down service ${type} as ${name}"
-    ${DOKKU_CMD} ${type}:destroy --force ${name}
+    ${DOKKU_CMD} ${type}:destroy ${name} --force
   else
     log-info "Service ${type} as ${name} not present"
   fi
