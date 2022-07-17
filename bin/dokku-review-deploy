@@ -72,8 +72,8 @@ function ensure_service {
   else
     log-info "Service ${type} as ${name} will be created"
     create_service ${type} ${name}
-    link_service ${type} ${name} ${alias} ${app_name}
   fi
+  link_service ${type} ${name} ${alias} ${app_name}
 }
 
 function setup_services {
@@ -88,7 +88,7 @@ function setup_services {
   done
 }
 
-function set_app_config {
+function configure_app {
   local app_name=${1}
   local configs=${2}
   log-info "Setting config for ${app_name}"
@@ -110,7 +110,7 @@ commit_sha="$(parse-ci-commit)"
 ensure_app ${REVIEW_APP_NAME}
 
 if [ -n "${APP_CONFIG}" ]; then
-  set_app_config ${REVIEW_APP_NAME} "${APP_CONFIG}"
+  configure_app ${REVIEW_APP_NAME} "${APP_CONFIG}"
 fi
 
 if [ -n "$SERVICES" ]; then
@@ -131,7 +131,7 @@ fi
 chown root: /github/workspace
 
 # shellcheck disable=SC2086
-git push $GIT_PUSH_FLAGS "$GIT_REMOTE_URL" "$commit_sha:refs/heads/$BRANCH" || echo "Already up-to-date"
+git push $GIT_PUSH_FLAGS "$GIT_REMOTE_URL" "$commit_sha:refs/heads/$BRANCH"
 
 if [ -n "$PORT_MAPPING" ]; then
   ${DOKKU_CMD} proxy:ports-set $REVIEW_APP_NAME $PORT_MAPPING
