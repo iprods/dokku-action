@@ -92,7 +92,6 @@ function configure_app {
   local app_name=${1}
   local configs=${2}
   log-info "Setting config for ${app_name}"
-  log-info ${configs}
   ${DOKKU_CMD} config:set --no-restart ${app_name} ${configs} || echo
 }
 
